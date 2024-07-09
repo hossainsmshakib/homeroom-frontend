@@ -1,5 +1,5 @@
 'use client'
-import SignIn from "@/components/signin/SignIn";
+import SignUp from "@/components/signup/SignUp";
 import React from "react";
 
 type Props = {};
@@ -7,7 +7,7 @@ type Props = {};
 function page({}: Props) {
   return (
     <>
-      <SignIn />
+    <SignUp/>
     </>
   );
 }
