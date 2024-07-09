@@ -12,7 +12,6 @@ function SignUp({}: Props) {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle form submission logic here
     console.log({ name, address, email, password });
   };
 
@@ -36,7 +35,7 @@ function SignUp({}: Props) {
           </div>
           <div className="mb-4">
             <label htmlFor="address" className="block text-gray-700 mb-2">
-              Address:
+              Permanent Address:
             </label>
             <input
               type="text"
