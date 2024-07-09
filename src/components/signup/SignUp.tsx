@@ -31,6 +31,7 @@ function SignUp({}: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
+              required
             />
           </div>
           <div className="mb-4">
@@ -43,6 +44,7 @@ function SignUp({}: Props) {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
+              required
             />
           </div>
           <div className="mb-4">
@@ -55,6 +57,7 @@ function SignUp({}: Props) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
+              required
             />
           </div>
           <div className="mb-4">
@@ -67,13 +70,14 @@ function SignUp({}: Props) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
+              required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-[#309797] text-white p-2 rounded hover:bg-[#309785]"
+            className="w-full bg-[#309797] text-white p-2 rounded hover:bg-[#287373]"
           >
-            Sign In
+            Sign Up
           </button>
         </form>
       </div>
