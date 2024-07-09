@@ -39,12 +39,13 @@ const RoomInfo: React.FC<Props> = ({}) => {
               <option value="">Select Location</option>
               <option value="Atlanta">Atlanta</option>
               <option value="Austin">Austin</option>
-              <option value="Kansas City">Kansas City</option>
-              <option value="Dallas / Ft Worth">Dallas / Ft Worth</option>
-              <option value="Indy">Indy</option>
-              <option value="Tampa">Tampa</option>
               <option value="Charlotte">Charlotte</option>
+              <option value="Dallas">Dallas</option>
+              <option value="Houston">Houston</option>
+              <option value="Indianapolis">Indianapolis</option>
+              <option value="Kansas City">Kansas City</option>
               <option value="San Antonio">San Antonio</option>
+              <option value="Tampa">Tampa</option>
             </select>
           </div>
           <div className="mb-4">
