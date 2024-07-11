@@ -1,19 +1,35 @@
-// pages/signin.tsx
-
+"use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "../navbar/Navbar";
+import { signUp } from "../../services/apiservices";
 
 type Props = {};
 
 function SignUp({}: Props) {
+  const router = useRouter();
   const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
+  const [permanentAddress, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log({ name, address, email, password });
+    setError("");
+    setSignupSuccess(false);
+
+    try {
+      await signUp({ name, permanentAddress, email, password });
+      setSignupSuccess(true);
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (error) {
+      console.error("Error signing up:", error);
+      setError("Failed to sign up. Please try again.");
+    }
   };
 
   return (
@@ -44,7 +60,7 @@ function SignUp({}: Props) {
             <input
               type="text"
               id="address"
-              value={address}
+              value={permanentAddress}
               onChange={(e) => setAddress(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
               required
@@ -83,6 +99,16 @@ function SignUp({}: Props) {
             Sign Up
           </button>
         </form>
+        {signupSuccess && (
+          <div className="mt-4 p-2 bg-green-100 text-green-700 rounded">
+            Signup successful! Redirecting to login page...
+          </div>
+        )}
+        {error && (
+          <div className="mt-4 p-2 bg-red-100 text-red-700 rounded">
+            {error}
+          </div>
+        )}
       </div>
     </div>
   );
