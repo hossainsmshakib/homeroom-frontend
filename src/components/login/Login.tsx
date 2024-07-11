@@ -1,5 +1,6 @@
 // components/login/Login.tsx
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import Navbar from "../navbar/Navbar";
 
 type Props = {}
 
@@ -14,7 +15,9 @@ const Login: React.FC<Props> = ({}) => {
   }
 
   return (
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div><Navbar/></div>
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-4">Login</h1>
         <form onSubmit={handleSubmit}>
