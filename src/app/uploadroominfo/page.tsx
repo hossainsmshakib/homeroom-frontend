@@ -1,13 +1,10 @@
-"use client";
-import RoomInfo from '@/components/roomspec/RoomInfo';
-import React from 'react'
+// src/app/uploadroominfo/page.tsx
+import dynamic from "next/dynamic";
 
-type Props = {}
+const RoomInfo = dynamic(() => import("../../components/roomspec/RoomInfo"), { ssr: false });
 
-function page({}: Props) {
-  return (
-    <> <RoomInfo/></>
-  )
-}
+const UploadRoomInfoPage = () => {
+  return <RoomInfo />;
+};
 
-export default page
+export default UploadRoomInfoPage;

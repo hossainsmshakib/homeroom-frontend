@@ -1,12 +1,29 @@
 "use client"; // Ensures the component is treated as a client component
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
+
+const MapComponent = dynamic(() => import("./MapComponent"), { ssr: false });
+
+const locations = {
+  Atlanta: [33.7490, -84.3880],
+  Austin: [30.2672, -97.7431],
+  Charlotte: [35.2271, -80.8431],
+  Dallas: [32.7767, -96.7970],
+  Houston: [29.7604, -95.3698],
+  Indianapolis: [39.7684, -86.1581],
+  "Kansas City": [39.0997, -94.5786],
+  "San Antonio": [29.4241, -98.4936],
+  Tampa: [27.9506, -82.4572],
+};
 
 type Props = {};
 
 const RoomInfo: React.FC<Props> = ({}) => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [homeAddress, setHomeAddress] = useState("");
+  const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [roomType, setRoomType] = useState("");
   const [bathroomType, setBathroomType] = useState("");
   const [rent, setRent] = useState("");
@@ -24,7 +41,6 @@ const RoomInfo: React.FC<Props> = ({}) => {
     InHouseLaundry: false,
     Pets: false,
   });
-
   const [currentStep, setCurrentStep] = useState(1);
 
   const today = new Date().toISOString().split("T")[0];
@@ -35,6 +51,8 @@ const RoomInfo: React.FC<Props> = ({}) => {
     console.log({
       description,
       location,
+      homeAddress,
+      coordinates,
       roomType,
       bathroomType,
       rent,
@@ -59,12 +77,15 @@ const RoomInfo: React.FC<Props> = ({}) => {
   };
 
   const nextStep = () => {
-    setCurrentStep((prevStep) => Math.min(prevStep + 1, 3));
+    if ((currentStep === 1 && (!description || !location || !homeAddress)) ||
+        (currentStep === 2 && (!roomType || !bathroomType || !rent))) {
+      alert("Please fill in all required fields");
+      return;
+    }
+    setCurrentStep((prev) => Math.min(prev + 1, 3));
   };
 
-  const prevStep = () => {
-    setCurrentStep((prevStep) => Math.max(prevStep - 1, 1));
-  };
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -92,22 +113,54 @@ const RoomInfo: React.FC<Props> = ({}) => {
                 <select
                   id="location"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    const coords = locations[e.target.value as keyof typeof locations];
+                    setCoordinates(coords ? [coords[0], coords[1]] : null);
+                  }}
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 >
                   <option value="">Select Location</option>
-                  <option value="Atlanta">Atlanta</option>
-                  <option value="Austin">Austin</option>
-                  <option value="Charlotte">Charlotte</option>
-                  <option value="Dallas">Dallas</option>
-                  <option value="Houston">Houston</option>
-                  <option value="Indianapolis">Indianapolis</option>
-                  <option value="Kansas City">Kansas City</option>
-                  <option value="San Antonio">San Antonio</option>
-                  <option value="Tampa">Tampa</option>
+                  {Object.keys(locations).map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </div>
+             {/*  <div className="mb-4">
+                <label htmlFor="homeAddress" className="block text-gray-700 font-bold mb-2">
+                  Home Address:
+                </label>
+                <input
+                  type="text"
+                  id="homeAddress"
+                  value={homeAddress}
+                  onChange={(e) => setHomeAddress(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                  readOnly
+                />
+              </div> */}
+              {coordinates && (
+                <MapComponent
+                  coordinates={coordinates}
+                  setCoordinates={setCoordinates}
+                  setHomeAddress={setHomeAddress}
+                />
+              )}
+              <button
+                type="button"
+                onClick={nextStep}
+                className="w-full bg-[#309797] text-white p-2 rounded hover:bg-[#287373]"
+              >
+                Next
+              </button>
+            </>
+          )}
+          {currentStep === 2 && (
+            <>
               <div className="mb-4">
                 <label htmlFor="roomType" className="block text-gray-700 font-bold mb-2">
                   Room Type:
@@ -124,17 +177,6 @@ const RoomInfo: React.FC<Props> = ({}) => {
                   <option value="private">Private</option>
                 </select>
               </div>
-              <button
-                type="button"
-                onClick={nextStep}
-                className="w-full bg-[#309797] text-white p-2 rounded hover:bg-[#287373]"
-              >
-                Next
-              </button>
-            </>
-          )}
-          {currentStep === 2 && (
-            <>
               <div className="mb-4">
                 <label htmlFor="bathroomType" className="block text-gray-700 font-bold mb-2">
                   Bathroom Type:
@@ -164,31 +206,6 @@ const RoomInfo: React.FC<Props> = ({}) => {
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="pictures" className="block text-gray-700 font-bold mb-2">
-                  Upload Pictures (Up to 5):
-                </label>
-                <input
-                  type="file"
-                  id="pictures"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => setPictures(e.target.files)}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="video" className="block text-gray-700 font-bold mb-2">
-                  Upload Video (Only 1):
-                </label>
-                <input
-                  type="file"
-                  id="video"
-                  accept="video/*"
-                  onChange={(e) => setVideo(e.target.files ? e.target.files[0] : null)}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
               <div className="flex justify-between">
                 <button
                   type="button"
@@ -209,6 +226,33 @@ const RoomInfo: React.FC<Props> = ({}) => {
           )}
           {currentStep === 3 && (
             <>
+              <div className="mb-4">
+                <label htmlFor="pictures" className="block text-gray-700 font-bold mb-2">
+                  Upload Pictures (Up to 5):
+                </label>
+                <input
+                  type="file"
+                  id="pictures"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setPictures(e.target.files)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="video" className="block text-gray-700 font-bold mb-2">
+                  Upload Video (Only 1):
+                </label>
+                <input
+                  type="file"
+                  id="video"
+                  accept="video/*"
+                  onChange={(e) => setVideo(e.target.files ? e.target.files[0] : null)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-bold mb-2">Amenities:</label>
                 <div className="grid grid-cols-2 gap-4">
@@ -241,8 +285,9 @@ const RoomInfo: React.FC<Props> = ({}) => {
                       checked={availabilityType === "fromDate"}
                       onChange={(e) => setAvailabilityType(e.target.value)}
                       className="mr-2"
+                      required
                     />
-                    Available from -
+                    Available from - 
                   </label>
                   {availabilityType === "fromDate" && (
                     <div className="mt-4">
@@ -256,6 +301,7 @@ const RoomInfo: React.FC<Props> = ({}) => {
                         onChange={(e) => setAvailableFrom(e.target.value)}
                         min={today}
                         className="w-full p-2 border border-gray-300 rounded"
+                        required
                       />
                     </div>
                   )}
@@ -267,8 +313,9 @@ const RoomInfo: React.FC<Props> = ({}) => {
                       checked={availabilityType === "shortTime"}
                       onChange={(e) => setAvailabilityType(e.target.value)}
                       className="mr-2"
+                      required
                     />
-                    Available for a limited time -
+                    Available for a limited time - 
                   </label>
                   {availabilityType === "shortTime" && (
                     <div className="mt-4">
@@ -282,6 +329,7 @@ const RoomInfo: React.FC<Props> = ({}) => {
                         onChange={(e) => setAvailableStart(e.target.value)}
                         min={today}
                         className="w-full p-2 border border-gray-300 rounded"
+                        required
                       />
                       <label htmlFor="availableEnd" className="block text-gray-700 mb-2 mt-4">
                         Available End Date:
@@ -293,6 +341,7 @@ const RoomInfo: React.FC<Props> = ({}) => {
                         onChange={(e) => setAvailableEnd(e.target.value)}
                         min={today}
                         className="w-full p-2 border border-gray-300 rounded"
+                        required
                       />
                     </div>
                   )}
